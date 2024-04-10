@@ -1,0 +1,6 @@
+# ninja log v5
+0	105	7340078285273839	CMakeFiles/untitled.dir/main.c.obj	36466bfe5bb217e6
+1	104	7344532646474111	untitled.exe	21db95adad6bcdd7
+1	381	7344529076441106	CMakeFiles/untitled.dir/1531.c.obj	e6d0b2b77c262509
+1	137	7344532724050390	build.ninja	9d4b7747bbb0f867
+2	92	7344530314299006	CMakeFiles/untitled.dir/pract/1531.c.obj	b1c0af655081104f
