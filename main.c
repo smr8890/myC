@@ -1,28 +1,47 @@
-#include<stdio.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
-char zfc[1000];
+// 自定义搜索函数，用于在数组a中查找是否存在一个元素，使得a[middle] + a[x] = y
+int sousuo(long long *a, int qwe, long long y, int n) {
+    int zuo = qwe;
+    int you = n - 1;
+    while (zuo <= you) {
+        int zhongjian = zuo + ((you - zuo) / 2);
+        if (a[zhongjian] + a[qwe] > y) {
+            you = zhongjian - 1;
+        } else if (a[zhongjian] + a[qwe] < y) {
+            zuo = zhongjian + 1;
+        } else { return 1; }
+    }
+    return -1;
+}
+
 int main() {
-    while (scanf("%s", zfc) != EOF) {
-        int shumu = strlen(zfc),flag = 0;
-        for (int j = 0; j < shumu + 1; j++) {
-            int biaozhi = 0;// 标记是否能够形成回文串
-            for (int k1 = shumu; k1 >= j + 1; k1--) { // 将字符串中j位置后的字符后移一位
-                zfc[k1] = zfc[k1 - 1];
+    int T, i;
+    long long ans[32] = {0};// 定义数组ans，用于存储2的幂次
+    scanf("%d", &T);
+    ans[0] = 1;
+    for (i = 1; i <= 30; i++) ans[i] = 2 * ans[i - 1];
+    while (T--) {
+        int n;
+        scanf("%d", &n);
+        long long *a = (long long *) malloc(sizeof(long long) * n);// 动态分配内存以存储集合S的元素
+        int j;
+        long long flag = 0;
+        for (i = 0; i < n; i++) scanf("%I64d", &a[i]);
+        for (i = 0; i < n; i++) {
+            for (j = 1; j <= 30; j++) {
+                if (ans[j] <= 2 * a[i]) continue;
+                else {
+                    if (sousuo(a, i, ans[j], n) == 1)
+                        flag++;
+                }
             }
-            zfc[j] = zfc[shumu - j];// 在位置j插入字符，字符取自字符串的对称位置
-            int t = 0;
-            for (t = 0; t < (shumu + 1) / 2; t++) { // 比较插入字符后的字符串的前半部分和后半部分是否相等
-                if (zfc[t] != zfc[shumu - t]) biaozhi = 1; // 如果字符不相等，则不能形成回文串
-            }
-            if (biaozhi == 0)flag++;
-            for (int k2 = j; k2 < shumu; k2++) {
-                zfc[k2] = zfc[k2 + 1];
-            }
-            zfc[shumu] = '0';
         }
-        printf("%d\n", flag);
-        memset(zfc, '0', sizeof(zfc)); // 将整个字符串重置为'0'，清除之前的尝试结果
+        printf("%I64d\n", flag);
+        free(a);// 释放动态分配的内存
+        a = NULL;// 将指针设置为NULL，避免悬挂指针
     }
     return 0;
 }
