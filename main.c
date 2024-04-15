@@ -1,47 +1,58 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-// 自定义搜索函数，用于在数组a中查找是否存在一个元素，使得a[middle] + a[x] = y
-int sousuo(long long *a, int qwe, long long y, int n) {
-    int zuo = qwe;
-    int you = n - 1;
-    while (zuo <= you) {
-        int zhongjian = zuo + ((you - zuo) / 2);
-        if (a[zhongjian] + a[qwe] > y) {
-            you = zhongjian - 1;
-        } else if (a[zhongjian] + a[qwe] < y) {
-            zuo = zhongjian + 1;
-        } else { return 1; }
-    }
-    return -1;
-}
-
+#include<stdio.h>
+#include<string.h>
 int main() {
-    int T, i;
-    long long ans[32] = {0};// 定义数组ans，用于存储2的幂次
-    scanf("%d", &T);
-    ans[0] = 1;
-    for (i = 1; i <= 30; i++) ans[i] = 2 * ans[i - 1];
-    while (T--) {
-        int n;
-        scanf("%d", &n);
-        long long *a = (long long *) malloc(sizeof(long long) * n);// 动态分配内存以存储集合S的元素
-        int j;
-        long long flag = 0;
-        for (i = 0; i < n; i++) scanf("%I64d", &a[i]);
-        for (i = 0; i < n; i++) {
-            for (j = 1; j <= 30; j++) {
-                if (ans[j] <= 2 * a[i]) continue;
-                else {
-                    if (sousuo(a, i, ans[j], n) == 1)
-                        flag++;
-                }
+    char chuan[30];
+    int n, amy, tom, john, count;
+    n = amy = tom = john = 0;
+    count = 1;
+    while (scanf("%[^\n]", chuan) != EOF) {
+        getchar();
+        int sum, num;
+        sum = num = 0;
+        char* p = strtok(chuan, " ");
+        if (strlen(p) == 2) {
+            num = (p[0] - '0') * 10 + p[1] - '0';
+        } else {
+            num = p[0] - '0';
+        }
+        while (p = strtok(NULL, " ")) {
+            if (p[0] == 'P') {
+                sum += 5;
             }
         }
-        printf("%I64d\n", flag);
-        free(a);// 释放动态分配的内存
-        a = NULL;// 将指针设置为NULL，避免悬挂指针
+        if (n == 0) {
+            if (john == 0) {
+                printf("Alice start game %d\n", count);
+                n++;
+            } else {
+                printf("Bob start game %d\n", count);
+                n++;
+            }
+        }
+        if (sum != num) {
+            if (john == 0) {
+                printf("Change to Bob\n");
+                n++;
+                john = 1;
+            } else {
+                printf("Change to Alice\n");
+                n++;
+                john = 0;
+            }
+        } else if (sum == num) {
+            if (john == 0) {
+                printf("Alice win game %d\n", count);
+                n = 0;
+                count++;
+                amy++;
+            } else {
+                printf("Bob win game %d\n", count);
+                count++;
+                n = 0;
+                tom++;
+            }
+        }
     }
+    printf("Game over %d:%d\n", amy, tom);
     return 0;
 }
