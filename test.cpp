@@ -1,57 +1,57 @@
-#include<cstdio>
-#include<iostream>
-#include<cstring>
-
+#include <stdio.h>
+//#include <unordered_map>
+#include <algorithm>
+#include <string.h>
+#include <math.h>
+typedef __int64 ll;
 using namespace std;
-int pre[1003][26];
-
-int main() {//
-
-
-
-    int T;///
-
-
-
-    cin >> T;
-
-
-
-    string s;
-    while (T--) {
-        int K, ssssss = 1000, max, qweqwe, num, b;////
-        memset(pre, 0, sizeof(pre));
-        cin >> K;
-        cin >> s;
-        int len = s.length();
-        for (int i = 1; i <= len; i++) {
-            pre[i][s[i - 1] - 'a']++;
-            for (int j = 0; j < 26; j++) {
-                pre[i + 1][j] = pre[i][j];
-            }
+ll x,y; //x表示行，y表示列
+void TX(ll n,ll k){
+    ll i,j,w;
+    if(n!=0){
+        j=pow(2,2*(n-1));
+        w=pow(2,n-1);
+//		printf("j=%I64d\n",j);
+        for(i=1;i<=4;i++){
+            if(i*j>=k) break;
         }
-        qweqwe = 0;
-        for (int fgh = 0; fgh < 26; fgh++) if (pre[len][fgh] > qweqwe) qweqwe = pre[len][fgh];
-        if (qweqwe <= K) {
-            cout << 0 << endl;
-            continue;
-        }
+        k-=(i-1)*j;
+//		printf("k=%I64d\n",k);
+        if(i==1){
 
-        for (int i = 1; i <= len; i++) {
-            for (int j = i; j <= len; j++) {
-                max = 0;
-                for (int k = 0; k < 26; k++) {
-                    num = pre[len][k] - pre[j][k] + pre[i - 1][k];
-                    if (num > max) max = num;
-                }
-                if (max <= K) {
-                    if (ssssss > j - i + 1) {
-                        ssssss = j - i + 1;
-                    }
-                    break;
-                }
-            }
         }
-        cout << ssssss << endl;
+        else if(i==2){
+            y=y+w;
+        }
+        else if(i==3){
+            x=x+w;
+        }
+        else if(i==4){
+            x=x+w;
+            y=y+w;
+        }
+        TX(n-1,k);
     }
+}
+int main(){
+    ll N,k,n;
+    ll i,j;
+    scanf("%I64d",&N);
+    while(N--){
+        x=1;
+        y=1;
+        scanf("%I64d",&k);
+        for(i=0;i<=60;i++){
+            j=pow(2,2*i);
+            if(j>=k)
+            {
+                n=i;
+                break;
+            }
+        }
+//		printf("n=%I64d\n",n);
+        TX(n,k);
+        printf("%I64d %I64d\n",x,y);
+    }
+
 }
