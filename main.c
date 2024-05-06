@@ -1,41 +1,94 @@
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
-int cmp_int(const void *a, const void *b) {
-    return *(int *) b -*(int *) a;
+#define MAX_LEN 11
+
+typedef struct Node {
+    char *str;
+    int swaps;
+    struct Node *next;
+} Node;
+
+Node *createNode(char *str, int swaps) {
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->str = (char *)malloc(sizeof(char) * (MAX_LEN + 1));
+    strcpy(newNode->str, str);
+    newNode->swaps = swaps;
+    newNode->next = NULL;
+    return newNode;
 }
 
-int result(int *a, int n) {
-//    while (n-- > 1) {
-//        qsort(a, n + 1, sizeof(a[0]), cmp_int);
-//        a[n - 1] = a[n] - a[n - 1];
-//    }
-    int t = n;
-    qsort(a,n, sizeof(a[0]),cmp_int);
-    for (int i = n-2; i >=0; --i) {
-        a[i]-=a[i+1];
+void enqueue(Node **head, Node **tail, char *str, int swaps) {
+    Node *newNode = createNode(str, swaps);
+    if (*head == NULL) {
+        *head = *tail = newNode;
+    } else {
+        (*tail)->next = newNode;
+        *tail = newNode;
     }
-    if (a[0] == 0) {
-        return 1;
+}
+
+Node *dequeue(Node **head, Node **tail) {
+    if (*head == NULL) {
+        return NULL;
     }
-    return 0;
+    Node *temp = *head;
+    *head = (*head)->next;
+    if (*head == NULL) {
+        *tail = NULL;
+    }
+    return temp;
+}
+
+int countDistinct(char *str, int k) {
+    Node *head = NULL, *tail = NULL;
+    int visited[1000000] = {0};
+    int count = 0;
+
+    enqueue(&head, &tail, str, 0);
+    visited[atoi(str)] = 1;
+    count++;
+
+    while (head != NULL) {
+        Node *curr = dequeue(&head, &tail);
+        char *currStr = curr->str;
+        int currSwaps = curr->swaps;
+        free(curr);
+
+        if (currSwaps == k) {
+            continue;
+        }
+
+        int len = strlen(currStr);
+        for (int i = 0; i < len - 1; i++) {
+            char temp[MAX_LEN + 1];
+            strcpy(temp, currStr);
+            char t=temp[i];
+            temp[i]=temp[i+1];
+            temp[i+1]=t;
+            if (temp[0] != '0' && !visited[atoi(temp)]) {
+                visited[atoi(temp)] = 1;
+                enqueue(&head, &tail, temp, currSwaps + 1);
+                count++;
+            }
+        }
+    }
+
+    return count;
 }
 
 int main() {
     int T;
     scanf("%d", &T);
+
     while (T--) {
-        int n;
-        scanf("%d", &n);
-        int a[10005];
-        for (int i = 0; i < n; ++i) {
-            scanf("%d", &a[i]);
-        }
-        if (result(a, n)) {
-            printf("Yes\n");
-        } else {
-            printf("No\n");
-        }
+        char n[MAX_LEN + 1];
+        int k;
+        scanf("%s%d", n, &k);
+
+        printf("%d\n", countDistinct(n, k));
     }
+
     return 0;
 }
