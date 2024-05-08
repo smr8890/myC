@@ -1,44 +1,44 @@
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
+#include <iostream>
+#include <vector>
 
-long long calculateExpression(char *expression, int *index) {
-    long long result = 0;
-    long long temp = 0;
+using namespace std;
 
-    if (expression[*index] >= '0' && expression[*index] <= '9') {
-        result = expression[(*index)++] - '0';
-    } else if (expression[*index] == '(') {
-        (*index)++;
-        result = calculateExpression(expression, index);
-        (*index)++;
-    } else {
-        return 0;
+bool isCompleteAndBST(vector<int>& tree) {
+    int n = tree.size();
+    if (n == 0) return true;  // 空树视为完全二叉排序树
+
+    int i = 1;
+    for (int val : tree) {
+        if ((i > 1) && (val < tree[(i-1)/2])) return false;  // 当前节点小于父节点
+        if (i > n) return false;  // 节点索引超过数组大小,不是完全二叉树
+
+        if (2*i <= n && val > tree[2*i-1]) return false;  // 当前节点大于左子节点
+        if (2*i+1 <= n && val < tree[2*i]) return false;  // 当前节点小于右子节点
+
+        i++;
     }
 
-    while (*index < strlen(expression)) {
-        if (expression[*index] == ')') {
-            result = pow(result, 2);
-        } else if (expression[*index] == '(') {
-            (*index)++;
-            temp = calculateExpression(expression, index);
-            result = pow(result + temp, 2);
-            (*index)++;
-        } else {
-            break;
-        }
-    }
-
-    return result;
+    return true;
 }
 
 int main() {
-    char expression[101];
+    int T;
+    cin >> T;
 
-    while (scanf("%s", expression) != EOF) {
-        int index = 0;
-        long long result = calculateExpression(expression, &index);
-        printf("%lld\n", result);
+    while (T--) {
+        int n;
+        cin >> n;
+
+        vector<int> tree(n);
+        for (int i = 0; i < n; i++) {
+            cin >> tree[i];
+        }
+
+        if (isCompleteAndBST(tree)) {
+            cout << "Yes" << endl;
+        } else {
+            cout << "No" << endl;
+        }
     }
 
     return 0;
