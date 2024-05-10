@@ -1,53 +1,78 @@
-#include <cstdio>
-#include <cstring>
 #include <iostream>
-#include <algorithm>
-
+#include <vector>
 using namespace std;
 
-typedef long long LL;
+// 定义最大节点数
+const int MAX_N = 10005;
 
-const int N = 100010, mod = 1000000009;
+// 邻接表存储树形结构
+vector<int> adj[MAX_N];
 
-int a[N];
+// 存储每个节点的初始值
+int val[MAX_N];
 
-int main()
-{
-    int n, k;
-    cin >> n >> k;
-    for (int i = 0; i < n; i ++) scanf("%d", &a[i]);
+// 标记每个节点是否被访问过
+bool visited[MAX_N];
 
-    sort(a, a + n);
-
-    int l  = 0, r = n - 1;                                     // 双指针初始化
-    int ans = 1;                                               // 乘积初始化
-    int sign  = 1;                                             // 符号初始化
-
-    if(k % 2)                                                  // k 为奇数
-    {
-        ans = a[r];                                            // 取出最大的数
-        r --;                                                  // r指针 左移
-        k --;                                                  // k 变为偶数
-
-        if(ans < 0) sign = -1;                                 // 最大值为负数，则所有数都是负数，结果也为负，所以要让绝对值小
+// DFS函数,计算以u为根节点的子树中,需要执行的最小操作次数,使得子树中所有节点的值都等于targetVal
+// parent参数用于避免重复访问父节点
+int dfs(int u, int parent, int targetVal) {
+    int count = 0;
+    // 如果当前节点值不等于目标值,需要执行一次操作
+    if (val[u] != targetVal) {
+        count++;
     }
-
-    while(k)
-    {
-        LL x = (LL)a[l] * a[l + 1], y =(LL)a[r] * a[r - 1];    // 左右两边同时取一对乘积，比较大小
-        if(x * sign > y * sign)
-        {
-            ans = x % mod * ans % mod;
-            l += 2;                                            // l指针 右移
+    // 标记当前节点已访问
+    visited[u] = true;
+    // 遍历当前节点的所有邻接节点
+    for (int v : adj[u]) {
+        // 如果邻接节点不是父节点,且未被访问过
+        if (v != parent && !visited[v]) {
+            // 递归处理邻接节点,目标值为当前节点值异或目标值
+            count += dfs(v, u, targetVal ^ val[u]);
         }
-        else
-        {
-            ans = y % mod * ans % mod;
-            r -= 2;                                            // r指针 左移
-        }
-        k -= 2;                                                // 个数减二
     }
+    return count;
+}
 
-    cout << ans << endl;
+// 求解整棵树的最小操作次数
+int solve(int n) {
+    int minOps = n;
+    // 枚举每个节点作为根节点
+    for (int i = 1; i <= n; i++) {
+        // 如果当前节点未被访问过
+        if (!visited[i]) {
+            // 计算以当前节点为根节点时,使所有节点值变为0或1的最小操作次数
+            minOps = min(minOps, min(dfs(i, -1, 0), dfs(i, -1, 1)));
+        }
+    }
+    return minOps;
+}
+
+int main() {
+    int T;
+    cin >> T;
+    while (T--) {
+        int n;
+        cin >> n;
+        // 清空邻接表和访问标记
+        for (int i = 0; i < MAX_N; i++) {
+            adj[i].clear();
+            visited[i] = false;
+        }
+        // 输入树形结构
+        for (int i = 0; i < n - 1; i++) {
+            int u, v;
+            cin >> u >> v;
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        // 输入每个节点的初始值
+        for (int i = 1; i <= n; i++) {
+            cin >> val[i];
+        }
+        // 输出最小操作次数
+        cout << solve(n) << endl;
+    }
     return 0;
 }
