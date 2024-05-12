@@ -34,7 +34,8 @@ long long int maxProduct(long long int *nums, int n, int k) {
         }
         k -= 2;
     }
-    return product;}
+    return product;
+}
 
 int main() {
     int T;
