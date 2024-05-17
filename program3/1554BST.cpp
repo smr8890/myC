@@ -10,7 +10,6 @@ struct Treenode {
     Treenode(int x) : data(x), lchild(NULL), rchild(NULL) {}
 };
 
-
 Treenode *insert(Treenode *T, int x, int &high) {
     if (T == NULL) {
         T = new Treenode(x);
