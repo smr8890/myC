@@ -1,99 +1,138 @@
-#include "iostream"
-#include "queue"
+#include <stdio.h>
+#include <stdlib.h>
 
-using namespace std;
+typedef struct Tree
+{
+    int center;
+    struct Tree* left;
+    struct Tree* right;
+} Tree;
 
-struct TreeNode {
-    int data;
-    int left, right;
-    TreeNode *lchild;
-    TreeNode *rchild;
-};
+Tree* creatTree(int a)
+{
+    Tree* newnode=(Tree* )malloc(sizeof(Tree));
+    newnode->center=a;
+    newnode->left=NULL;
+    newnode->right=NULL;
+    return newnode;
+}
 
-TreeNode *createTree(TreeNode *T) {
-    int val, left, right;
-    queue<TreeNode *> q;
-
-    scanf("%d %d %d", &val, &left, &right);
-    T = new TreeNode;
-    T->data=val;
-    T->left=left;
-    T->right=right;
-    q.push(T);
-
-    TreeNode *p = nullptr;
-    while (!q.empty()) {
-        p = q.front();
-        q.pop();
-        if (p->left != 0) {
-            scanf("%d %d %d", &val, &left, &right);
-            p->lchild = new TreeNode;
-            p->lchild->data=val;
-            p->lchild->left=left;
-            p->lchild->right=right;
-            q.push(p->lchild);
+Tree* buildTree(int n,int node[][5])
+{
+    Tree* node_tem[105]={NULL};
+    for(int i=1;i<=n;i++)
+    {
+        node_tem[i]=creatTree(node[i-1][0]);
+    }
+    int left,right;
+    for(int i=1;i<=n;i++)
+    {
+        left=node[i-1][1];
+        right=node[i-1][2];
+        if(left!=0)
+        {
+            node_tem[i]->left=node_tem[left];
         }
-        if (p->right != 0) {
-            scanf("%d %d %d", &val, &left, &right);
-            p->rchild = new TreeNode;
-            p->rchild->data=val;
-            p->rchild->left=left;
-            p->rchild->right=right;
-            q.push(p->rchild);
+        if(right!=0)
+        {
+            node_tem[i]->right=node_tem[right];
         }
     }
-    return T;
+    return node_tem[1];
 }
 
-void merge(TreeNode *T1, TreeNode *T2) {
-    if (T2 == nullptr) {
+Tree* mergeTree(Tree* a1,Tree* a2)
+{
+    if(a1==NULL)
+    {
+        return a2;
+    }
+    if(a2==NULL)
+    {
+        return a1;
+    }
+    a1->center+=a2->center;
+    a1->left=mergeTree(a1->left,a2->left);
+    a1->right=mergeTree(a1->right,a2->right);
+    return a1;
+}
+
+void pre(Tree* a)
+{
+    if(a==NULL)
+    {
         return;
     }
-    if (T1 == nullptr) {
-        T1 = new TreeNode;
-        T1->data=T2->data;
-        T1->left=0;
-        T1->right=0;
-    } else {
-        T1->data += T2->data;
+    printf("%d",a->center);
+    if(a->left!=NULL||a->right!=NULL)
+    {
+        printf(" ");
     }
-    merge(T1->lchild, T2->lchild);
-    merge(T1->rchild, T2->rchild);
+    pre(a->left);
+    if(a->left!=NULL&&a->right!=NULL)
+    {
+        printf(" ");
+    }
+    pre(a->right);
 }
 
-void preOrderTraversal(TreeNode *root) {
-    if (root == nullptr) {
+void in(Tree* a)
+{
+    if(a==NULL)
+    {
         return;
     }
-    printf("%d ", root->data);
-    preOrderTraversal(root->lchild);
-    preOrderTraversal(root->rchild);
+    in(a->left);
+    if(a->left!=NULL)
+    {
+        printf(" ");
+    }
+    printf("%d",a->center);
+    if(a->right!=NULL)
+    {
+        printf(" ");
+    }
+    in(a->right);
 }
 
-void inOrderTraversal(TreeNode *root) {
-    if (root == nullptr) {
+void freespace(Tree* a)
+{
+    if(a==NULL)
+    {
         return;
     }
-    inOrderTraversal(root->lchild);
-    printf("%d ", root->data);
-    inOrderTraversal(root->rchild);
+    freespace(a->left);
+    freespace(a->right);
+    free(a);
 }
 
-int main() {
+int main()
+{
     int T;
-    scanf("%d", &T);
-    while (T--) {
-        int n1, n2;
-        scanf("%d", &n1);
-        TreeNode *T1 = nullptr;
-        T1 = createTree(T1);
-        scanf("%d", &n2);
-        TreeNode *T2 = nullptr;
-        T2 = createTree(T2);
-        merge(T1, T2);
-        preOrderTraversal(T1);
+    scanf("%d",&T);
+    while(T--)
+    {
+        int n1,n2;
+        scanf("%d",&n1);
+        int a1[105][5];
+        for(int i=0;i<n1;i++)
+        {
+            scanf("%d %d %d",&a1[i][0],&a1[i][1],&a1[i][2]);
+        }
+        scanf("%d",&n2);
+        int a2[105][5];
+        for(int i=0;i<n2;i++)
+        {
+            scanf("%d %d %d",&a2[i][0],&a2[i][1],&a2[i][2]);
+        }
+        Tree* tree1=buildTree(n1,a1);
+        Tree* tree2=buildTree(n2,a2);
+        Tree* new_tree=mergeTree(tree1,tree2);
+        pre(new_tree);
         printf("\n");
-        inOrderTraversal(T1);
+        in(new_tree);
+        printf("\n");
+        freespace(new_tree);
     }
     return 0;
 }

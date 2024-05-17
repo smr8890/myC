@@ -1,5 +1,6 @@
 #include "iostream"
 #include "queue"
+#include "vector"
 
 using namespace std;
 
@@ -9,7 +10,7 @@ struct TreeNode {
     TreeNode *lchild;
     TreeNode *rchild;
 
-    TreeNode(int x, int y, int z) : data(x), left(y), right(z), lchild(nullptr), rchild(nullptr) {}
+    TreeNode(int x, int y, int z) : data(x), left(y), right(z), lchild(NULL), rchild(NULL) {}
 };
 
 TreeNode *createTree(TreeNode *T) {
@@ -20,7 +21,7 @@ TreeNode *createTree(TreeNode *T) {
     T = new TreeNode(val, left, right);
     q.push(T);
 
-    TreeNode *p = nullptr;
+    TreeNode *p = NULL;
     while (!q.empty()) {
         p = q.front();
         q.pop();
@@ -39,8 +40,8 @@ TreeNode *createTree(TreeNode *T) {
 }
 
 TreeNode *merge(TreeNode *T1, TreeNode *T2) {
-    if (T1 == nullptr)return T2;
-    if (T2 == nullptr)return T1;
+    if (T1 == NULL)return T2;
+    if (T2 == NULL)return T1;
 
     queue<TreeNode *> q;
     q.push(T1);
@@ -51,67 +52,41 @@ TreeNode *merge(TreeNode *T1, TreeNode *T2) {
         q.pop();
         TreeNode *p2 = q.front();
         q.pop();
-        p1->data+=p2->data;
-        if (p1->lchild!= nullptr&&p2->lchild!= nullptr){
+        p1->data += p2->data;
+        if (p1->lchild != NULL && p2->lchild != NULL) {
             q.push(p1->lchild);
             q.push(p2->lchild);
-        } else if (p1->lchild== nullptr){
-            p1->lchild=p2->lchild;
+        } else if (p1->lchild == NULL) {
+            p1->lchild = p2->lchild;
         }
-        if (p1->rchild!= nullptr&&p2->rchild!= nullptr){
+        if (p1->rchild != NULL && p2->rchild != NULL) {
             q.push(p1->rchild);
             q.push(p2->rchild);
-        } else if (p1->rchild== nullptr){
-            p1->rchild=p2->rchild;
+        } else if (p1->rchild == NULL) {
+            p1->rchild = p2->rchild;
         }
     }
     return T1;
 }
 
-void preMerge(TreeNode *T1, TreeNode *T2) {
-    if (T1 == nullptr && T2 == nullptr) {
+void preOrderTraversal(TreeNode *root, queue<int> &q) {
+    if (root == NULL) {
         return;
     }
-    if (T1 == nullptr) {
-        T1 = new TreeNode(0, 0, 0);
-    } else if (T2 == nullptr) {
-        T2 = new TreeNode(0, 0, 0);
-    }
-    printf("%d ", T1->data + T2->data);
-    preMerge(T1->lchild, T2->lchild);
-    preMerge(T1->rchild, T2->rchild);
+    q.push(root->data);
+//    printf("%d ", root->data);
+    preOrderTraversal(root->lchild, q);
+    preOrderTraversal(root->rchild, q);
 }
 
-void inMerge(TreeNode *T1, TreeNode *T2) {
-    if (T1 == nullptr && T2 == nullptr) {
+void inOrderTraversal(TreeNode *root, queue<int> &q) {
+    if (root == NULL) {
         return;
     }
-    if (T1 == nullptr) {
-        T1 = new TreeNode(0, 0, 0);
-    } else if (T2 == nullptr) {
-        T2 = new TreeNode(0, 0, 0);
-    }
-    inMerge(T1->lchild, T2->lchild);
-    printf("%d ", T1->data + T2->data);
-    inMerge(T1->rchild, T2->rchild);
-}
-
-void preOrderTraversal(TreeNode *root) {
-    if (root == nullptr) {
-        return;
-    }
-    printf("%d ", root->data);
-    preOrderTraversal(root->lchild);
-    preOrderTraversal(root->rchild);
-}
-
-void inOrderTraversal(TreeNode *root) {
-    if (root == nullptr) {
-        return;
-    }
-    inOrderTraversal(root->lchild);
-    printf("%d ", root->data);
-    inOrderTraversal(root->rchild);
+    inOrderTraversal(root->lchild, q);
+    q.push(root->data);
+//    printf("%d ", root->data);
+    inOrderTraversal(root->rchild, q);
 }
 
 int main() {
@@ -120,19 +95,37 @@ int main() {
     while (T--) {
         int n1, n2;
         scanf("%d", &n1);
-        TreeNode *T1 = nullptr;
+        TreeNode *T1 = NULL;
         T1 = createTree(T1);
         scanf("%d", &n2);
-        TreeNode *T2 = nullptr;
+        TreeNode *T2 = NULL;
         T2 = createTree(T2);
-//        int preout[105];
-//        preMerge(T1, T2);
-//        printf("\n");
-//        inMerge(T1, T2);
-        T1=merge(T1, T2);
-        preOrderTraversal(T1);
+
+        T1 = merge(T1, T2);
+        queue<int> queue1, queue2;
+        preOrderTraversal(T1, queue1);
+        while (!queue1.empty()) {
+            int x = queue1.front();
+            queue1.pop();
+            if (!queue1.empty()) {
+                printf("%d ", x);
+            } else {
+                printf("%d", x);
+            }
+        }
         printf("\n");
-        inOrderTraversal(T1);
+
+        inOrderTraversal(T1, queue2);
+        while (!queue2.empty()) {
+            int x = queue2.front();
+            queue2.pop();
+            if (!queue2.empty()) {
+                printf("%d ", x);
+            } else {
+                printf("%d", x);
+            }
+        }
+        printf("\n");
     }
     return 0;
 }
