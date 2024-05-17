@@ -103,7 +103,6 @@ int main() {
         printf("\n");
         inOrderTraversal(T3);
         printf("\n");
-        freeTree(T3);
     }
     return 0;
 }
