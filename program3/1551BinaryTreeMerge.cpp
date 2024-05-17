@@ -43,29 +43,9 @@ TreeNode *merge(TreeNode *T1, TreeNode *T2) {
     if (T1 == NULL)return T2;
     if (T2 == NULL)return T1;
 
-    queue<TreeNode *> q;
-    q.push(T1);
-    q.push(T2);
-
-    while (!q.empty()) {
-        TreeNode *p1 = q.front();
-        q.pop();
-        TreeNode *p2 = q.front();
-        q.pop();
-        p1->data += p2->data;
-        if (p1->lchild != NULL && p2->lchild != NULL) {
-            q.push(p1->lchild);
-            q.push(p2->lchild);
-        } else if (p1->lchild == NULL) {
-            p1->lchild = p2->lchild;
-        }
-        if (p1->rchild != NULL && p2->rchild != NULL) {
-            q.push(p1->rchild);
-            q.push(p2->rchild);
-        } else if (p1->rchild == NULL) {
-            p1->rchild = p2->rchild;
-        }
-    }
+    T1->data += T2->data;
+    T1->lchild = merge(T1->lchild, T2->lchild);
+    T1->rchild = merge(T1->rchild, T2->rchild);
     return T1;
 }
 
@@ -99,6 +79,13 @@ void inOrderTraversal(TreeNode *root) {
     inOrderTraversal(root->rchild);
 }
 
+void freeTree(TreeNode *T) {
+    if (T == NULL)return;
+    freeTree(T->lchild);
+    freeTree(T->rchild);
+    free(T);
+}
+
 int main() {
     int T;
     scanf("%d", &T);
@@ -111,11 +98,12 @@ int main() {
         TreeNode *T2 = NULL;
         T2 = createTree(T2);
 
-        T1 = merge(T1, T2);
-        preOrderTraversal(T1);
+        TreeNode *T3 = merge(T1, T2);
+        preOrderTraversal(T3);
         printf("\n");
-        inOrderTraversal(T1);
+        inOrderTraversal(T3);
         printf("\n");
+        freeTree(T3);
     }
     return 0;
 }
