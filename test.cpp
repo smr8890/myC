@@ -1,44 +1,67 @@
-#include <iostream>
-#include <string>
+#include<stdio.h>
+#include<string.h>
+#include<algorithm>
 using namespace std;
 
-int solve(string s) {
-    int n = s.length();
-    int res = 0;
-    int prev = -1; // 前一天训练的项目
-    int cnt = 0;   // 当前连续训练同一项目的天数
+const int N = 5000;
 
-    for (int i = 0; i < n; i++) {
-        if (s[i] == '0') {
-            cnt = 0; // 重置连续天数
-        } else {
-            int curr = s[i] - '1'; // 当前训练的项目
-            if (curr != prev) {
-                res++;
-                prev = curr;
-                cnt = 1;
-            } else {
-                cnt++;
-                if (cnt > 2) {
-                    cnt = 2; // 连续三天以上训练同一项目，只计算前两天
-                }
-                res++;
-            }
+struct node //存储每一条边
+{
+    int from;
+    int to;
+    int w;
+} a[N * 10];
+
+bool cmp(node aa, node bb) //排序
+{
+    return aa.w > bb.w; //注意，和最小生成树的排序不同
+}
+
+int n, m, k, t;
+int f[N]; //存储每一个点的父亲节点
+
+int getf(int v) //寻找父亲节点；
+{
+    if (f[v] == v)
+        return f[v];
+
+    return f[v] = getf(f[v]);
+}
+
+int Kruskal() {
+    sort(a, a + k, cmp); //按照边的权值由大到小进行排序；
+    int ans = 0, countt = 1;
+    for (int i = 0; i < k; i++) {
+        int t1 = getf(a[i].from);
+        int t2 = getf(a[i].to);
+        if (t1 != t2) //父亲节点不同，不会构成环路；
+        {
+            ans += a[i].w;
+            f[t2] = t1; //把父亲节点改成相同；
+            countt++;
+            if (countt == n) //如果加入n条边就可以结束了；
+                break;
         }
     }
-
-    return res;
+    int sum1 = 0;
+    for (int i = 0; i < k; i++) {
+        sum1 += a[i].w;
+    }
+    return sum1 - ans;
 }
 
 int main() {
     int T;
-    cin >> T;
-
+    scanf("%d", &T);
     while (T--) {
-        string s;
-        cin >> s;
-        cout << solve(s) << endl;
+        scanf("%d %d", &n, &k);
+        for (int i = 0; i < k; i++) {
+            scanf("%d %d %d", &a[i].from, &a[i].to, &a[i].w);
+        }
+        for (int i = 0; i <= N; i++) //初始化，自己的父亲节点是自己；
+            f[i] = i;
+        int kk = Kruskal();
+        printf("%d\n", kk);
     }
-
     return 0;
 }
